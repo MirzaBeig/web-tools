@@ -6,6 +6,9 @@
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#191919;color:#eee;font:15px/1.4 Arial,sans-serif;scrollbar-width:none}::-webkit-scrollbar{display:none}a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}button{font:inherit;cursor:pointer}article{max-width:900px;margin:0 auto;padding:16px;background:#000;border:1px solid #303438;border-radius:14px}header{display:flex;align-items:center;gap:9px;margin-bottom:6px;min-width:0}.avatar{width:40px;height:40px;border-radius:50%;flex:none}.identity{display:flex;gap:5px;align-items:baseline;flex-wrap:wrap;min-width:0}.name{font-weight:700}.handle,time{color:#71767b}.verified{color:#fff;background:#1d9bf0;border-radius:50%;font-size:10px;width:13px;height:13px;display:inline-flex;align-items:center;justify-content:center}.body{margin-left:0}.text{white-space:pre-wrap;overflow-wrap:anywhere;margin:0}.clamped{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:var(--lines,6);overflow:hidden}.text a,.more,.source{color:#1d9bf0}.more{border:0;background:none;padding:3px 0 8px}.media{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#000;border:1px solid #303438;border-radius:14px;margin:8px 0 0}.quote{display:block;margin-top:6px;border:1px solid #303438;border-radius:14px;padding:10px 12px}.quote:hover{background:#080808;text-decoration:none}.quote header{margin-bottom:7px}.quote .avatar{width:23px;height:23px}.quote .identity{font-size:14px}.quote-content{display:flex;gap:12px;align-items:flex-start}.thumbnail{position:relative;width:94px;height:94px;flex:none;overflow:hidden;border:1px solid #303438;border-radius:12px}.thumbnail img{width:100%;height:100%;object-fit:cover}.duration{position:absolute;bottom:4px;left:5px;font-size:12px;background:#000b;padding:0 3px;border-radius:3px}.quote .text{font-size:14px;--lines:4;flex:1;min-width:0}.footer{display:flex;justify-content:space-between;align-items:center;color:#71767b;font-size:13px;margin-top:12px;gap:12px}.footer a{display:flex;align-items:center;gap:6px}.footer svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6}.likes:hover{color:#f91880}.source{font-size:12px}.error{padding:16px;color:#ffb8b8}button:focus-visible,a:focus-visible{outline:2px solid #1d9bf0;outline-offset:3px}@media(max-width:480px){article{padding:12px}.body{margin-left:0}.identity{font-size:14px}.thumbnail{width:80px;height:80px}.quote .handle{display:none}}
 </style>
+<style>
+.editor{max-width:900px;margin:0 auto 14px;padding:16px;border:1px solid #38424b;border-radius:14px;background:#20262c}.editor label{font-weight:bold}.editor-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}.editor input[type=range]{flex:1;min-width:140px;accent-color:#1d9bf0}.editor input[type=number]{width:64px}.editor input,.editor button{font:inherit;padding:8px;border:1px solid #52606d;border-radius:7px;background:#111;color:#eee}.editor button{background:#1d9bf0;color:#fff;border:0}.editor .embed-link{width:100%;font-size:12px}.editor p{margin:8px 0 0;color:#aab5bf;font-size:13px}
+</style>
 </head>
 <body><main id="root" aria-live="polite">Loading post…</main>
 <script>
@@ -13,6 +16,66 @@ const root = document.getElementById('root');
 const parameters = new URLSearchParams(location.search);
 const postId = parameters.get('id');
 const lineCount = Number(parameters.get('lines') || 5);
+function addEditor(text, more){
+    if(parameters.get('edit') !== '1'){return;}
+    const panel = element('section','editor');
+    panel.setAttribute('aria-label','Embed settings');
+    const label = element('label','','Text lines before Show more');
+    label.htmlFor = 'line-count';
+    const controls = element('div','editor-controls');
+    const slider = element('input');
+    slider.type = 'range';
+    slider.min = '1';
+    slider.max = '30';
+    slider.value = lineCount;
+    slider.setAttribute('aria-label','Text lines before Show more');
+    const number = element('input');
+    number.type = 'number';
+    number.id = 'line-count';
+    number.min = '1';
+    number.max = '30';
+    number.value = lineCount;
+    const copy = element('button','','Copy embed link');
+    const output = element('input','embed-link');
+    output.readOnly = true;
+    output.setAttribute('aria-label','Embed link without editing controls');
+    const status = element('p','','Adjust the preview, then paste the copied link into Notion. The copied link hides these controls.');
+    status.setAttribute('role','status');
+    function update(value){
+        const count = Number(value);
+        if(!Number.isInteger(count) || count < 1 || count > 30){number.reportValidity();return;}
+        slider.value = count;
+        number.value = count;
+        text.style.setProperty('--lines',count);
+        text.classList.add('clamped');
+        more.setAttribute('aria-expanded','false');
+        more.textContent = 'Show more';
+        more.hidden = text.scrollHeight <= text.clientHeight + 1;
+        const url = new URL(location.href);
+        url.searchParams.set('lines',count);
+        history.replaceState(null,'',url);
+        url.searchParams.delete('edit');
+        output.value = url.href;
+        copy.textContent = 'Copy embed link';
+    }
+    slider.oninput = () => update(slider.value);
+    number.oninput = () => {if(number.value !== ''){update(number.value);}};
+    copy.onclick = async () => {
+        try{
+            await navigator.clipboard.writeText(output.value);
+            copy.textContent = 'Copied';
+            status.textContent = 'Paste this link into your Notion embed. Readers will see only the post.';
+        }catch(error){
+            output.focus();
+            output.select();
+            status.textContent = 'Clipboard access was blocked. Copy the selected link with Ctrl+C.';
+        }
+    };
+    controls.append(slider,number,copy);
+    panel.append(label,controls,output,status);
+    root.before(panel);
+    update(lineCount);
+}
 const element = (tag, className, text) => {const node = document.createElement(tag);if(className){node.className=className;}if(text!==undefined){node.textContent=text;}return node;};
 const postUrl = post => 'https://x.com/' + post.user.screen_name + '/status/' + post.id_str;
 function link(url, className, text){const node=element('a',className,text);node.href=url;node.target='_blank';node.rel='noopener noreferrer';return node;}
@@ -24,6 +87,6 @@ function quote(post){const card=link(postUrl(post),'quote');card.setAttribute('a
 const icons={reply:'<path d="M20 11.5a8.5 8.5 0 0 1-8.5 8.5H4l2-4A8.5 8.5 0 1 1 20 11.5Z"/>',heart:'<path d="M12 21 3.5 12.5C-2 6 6-1 12 6c6-7 14 0 8.5 6.5Z"/>',external:'<path d="M14 3h7v7M21 3 10 14M10 5H4v16h16v-6"/>'};
 function action(url,label,type){const anchor=link(url,type,label);const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('aria-hidden','true');icon.innerHTML=icons[type==='likes'?'heart':type];anchor.prepend(icon);return anchor;}
 async function render(){if(!/^\d+$/.test(postId||'')){throw new Error('A numeric post id is required.');}if(!Number.isInteger(lineCount)||lineCount<1||lineCount>30){throw new Error('lines must be between 1 and 30.');}const response=await fetch('./posts/'+postId+'.json?v=2', {cache:'no-cache'});if(!response.ok){throw new Error('This post has not been imported ('+response.status+').');}const post=await response.json();const article=element('article');article.append(header(post));const body=element('div','body');const text=textBlock(post);text.style.setProperty('--lines',lineCount);body.append(text);const more=element('button','more','Show more');more.setAttribute('aria-expanded','false');more.onclick=()=>{const expanded=more.getAttribute('aria-expanded')!=='true';more.setAttribute('aria-expanded',String(expanded));text.classList.toggle('clamped',!expanded);more.textContent=expanded?'Show less':'Show more';};body.append(more);if(post.note_tweet && !post.full_text){const full=link(postUrl(post),'source',' · Full post on X');body.append(full);}const media=mainMedia(post);if(media){body.append(media);}if(post.quoted_tweet){body.append(quote(post.quoted_tweet));}const footer=element('div','footer');footer.append(action('https://x.com/intent/tweet?in_reply_to='+post.id_str,String(post.conversation_count??post.reply_count??'Reply'),'reply'),action('https://x.com/intent/like?tweet_id='+post.id_str,String(post.favorite_count??'Like'),'likes'),action(postUrl(post),'View on X','external'));body.append(footer);article.append(body);root.replaceChildren(article);requestAnimationFrame(()=>{more.hidden=text.scrollHeight<=text.clientHeight+1;});new ResizeObserver(()=>{if(more.getAttribute('aria-expanded')==='false'){more.hidden=text.scrollHeight<=text.clientHeight+1;}}).observe(text);}
-render().catch(error=>{root.className='error';root.textContent=error.message;});
+render().then(()=>addEditor(root.querySelector('.body > .text'),root.querySelector('.more'))).catch(error=>{root.className='error';root.textContent=error.message;});
 </script>
 </body></html>
