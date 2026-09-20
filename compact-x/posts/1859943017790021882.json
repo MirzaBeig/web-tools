@@ -1,1 +1,376 @@
-{"__typename":"Tweet","favorite_count":588,"lang":"en","possibly_sensitive":false,"created_at":"2024-11-22T12:52:26.000Z","display_text_range":[0,279],"entities":{"hashtags":[{"indices":[53,61],"text":"Unity3D"},{"indices":[75,87],"text":"RealtimeVFX"},{"indices":[101,109],"text":"GameDev"},{"indices":[138,148],"text":"Photoshop"},{"indices":[168,181],"text":"AfterEffects"}],"media":[{"display_url":"pic.x.com/fMlZvii7Ba","expanded_url":"https://x.com/TheMirzaBeig/status/1859943017790021882/video/1","indices":[279,302],"url":"https://t.co/fMlZvii7Ba"}]},"id_str":"1859943017790021882","text":"Another year! 🎉 My experience so far...\n\n11 years of #Unity3D.\n13 years of #RealtimeVFX.\n14 years of #GameDev.\n\n16+ years of programming, #Photoshop (Graphics Design), #AfterEffects (Motion Graphics), and audio production. Through the years: HTML 4, ActionScript 2/3, PS, Vegas, https://t.co/fMlZvii7Ba","user":{"id_str":"999116676","name":"Mirza Beig","screen_name":"TheMirzaBeig","is_blue_verified":true,"profile_image_shape":"Circle","verified":false,"profile_image_url_https":"https://pbs.twimg.com/profile_images/1134329522927624193/lrd-NM53_normal.png"},"edit_control":{"edit_tweet_ids":["1859943017790021882"],"editable_until_msecs":"1732283546000","edits_remaining":"5","is_edit_eligible":false},"mediaDetails":[{"additional_media_info":{},"display_url":"pic.x.com/fMlZvii7Ba","expanded_url":"https://x.com/TheMirzaBeig/status/1859943017790021882/video/1","ext_media_availability":{"status":"Available"},"indices":[279,302],"media_url_https":"https://pbs.twimg.com/ext_tw_video_thumb/1859922624471588864/pu/img/qq4-C7u3XEf-i-TL.jpg","original_info":{"focus_rects":[],"height":1080,"width":1920},"sizes":{"large":{"h":1080,"resize":"fit","w":1920},"medium":{"h":675,"resize":"fit","w":1200},"small":{"h":383,"resize":"fit","w":680},"thumb":{"h":150,"resize":"crop","w":150}},"type":"video","url":"https://t.co/fMlZvii7Ba","video_info":{"aspect_ratio":[16,9],"duration_millis":24233,"variants":[{"content_type":"application/x-mpegURL","url":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/pl/oB5SJoBPjmqmUiNS.m3u8?tag=14"},{"bitrate":256000,"content_type":"video/mp4","url":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/480x270/-t9S3PSEWzEXipGM.mp4?tag=14"},{"bitrate":832000,"content_type":"video/mp4","url":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/640x360/eByHcfpDb4vVAWZ_.mp4?tag=14"},{"bitrate":2176000,"content_type":"video/mp4","url":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/1280x720/Xo0tTde9UDYC5R7y.mp4?tag=14"},{"bitrate":10368000,"content_type":"video/mp4","url":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/1920x1080/zrMSfjQOUnbdZpzN.mp4?tag=14"}]}}],"photos":[],"video":{"aspectRatio":[16,9],"contentType":"media_entity","durationMs":24233,"mediaAvailability":{"status":"available"},"poster":"https://pbs.twimg.com/ext_tw_video_thumb/1859922624471588864/pu/img/qq4-C7u3XEf-i-TL.jpg","variants":[{"type":"application/x-mpegURL","src":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/pl/oB5SJoBPjmqmUiNS.m3u8?tag=14"},{"type":"video/mp4","src":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/480x270/-t9S3PSEWzEXipGM.mp4?tag=14"},{"type":"video/mp4","src":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/640x360/eByHcfpDb4vVAWZ_.mp4?tag=14"},{"type":"video/mp4","src":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/1280x720/Xo0tTde9UDYC5R7y.mp4?tag=14"},{"type":"video/mp4","src":"https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/1920x1080/zrMSfjQOUnbdZpzN.mp4?tag=14"}],"videoId":{"type":"tweet","id":"1859943017790021882"},"viewCount":0},"conversation_count":15,"news_action_type":"conversation","quoted_tweet":{"favorite_count":112,"lang":"en","possibly_sensitive":false,"reply_count":2,"retweet_count":8,"created_at":"2023-11-22T13:24:42.000Z","display_text_range":[0,280],"entities":{"hashtags":[{"indices":[66,74],"text":"Unity3D"},{"indices":[138,146],"text":"gamedev"}],"media":[{"display_url":"pic.x.com/82UcwaAFYx","expanded_url":"https://x.com/TheMirzaBeig/status/1727317180478324806/video/1","indices":[278,301],"url":"https://t.co/82UcwaAFYx"}]},"id_str":"1727317180478324806","text":"10 (👀) years ago, on this day...\nI tweeted about having picked up #Unity3D.\n\nIt was easier to work with than anything I'd ever touched in #gamedev before. Added a plane, sphere + rigidbody, and hit play. It just worked. No programming.\n\nSo I kept going. 🙂\n\n(📹: my 2013 project) https://t.co/82UcwaAFYx","user":{"id_str":"999116676","name":"Mirza Beig","screen_name":"TheMirzaBeig","is_blue_verified":true,"profile_image_shape":"Circle","verified":false,"profile_image_url_https":"https://pbs.twimg.com/profile_images/1134329522927624193/lrd-NM53_normal.png"},"edit_control":{"edit_tweet_ids":["1727317180478324806"],"editable_until_msecs":"1700663082000","edits_remaining":"5","is_edit_eligible":false},"mediaDetails":[{"additional_media_info":{},"display_url":"pic.x.com/82UcwaAFYx","expanded_url":"https://x.com/TheMirzaBeig/status/1727317180478324806/video/1","ext_media_availability":{"status":"Available"},"indices":[278,301],"media_url_https":"https://pbs.twimg.com/ext_tw_video_thumb/1727312812651753472/pu/img/ZFi955xKZduzcw0r.jpg","original_info":{"focus_rects":[],"height":1080,"width":1920},"sizes":{"large":{"h":1080,"resize":"fit","w":1920},"medium":{"h":675,"resize":"fit","w":1200},"small":{"h":383,"resize":"fit","w":680},"thumb":{"h":150,"resize":"crop","w":150}},"type":"video","url":"https://t.co/82UcwaAFYx","video_info":{"aspect_ratio":[16,9],"duration_millis":6533,"variants":[{"content_type":"application/x-mpegURL","url":"https://video.twimg.com/ext_tw_video/1727312812651753472/pu/pl/0GQsr7ZICcuJGUhQ.m3u8?tag=12"},{"bitrate":256000,"content_type":"video/mp4","url":"https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/480x270/8zZvXSdW1GfGEwHa.mp4?tag=12"},{"bitrate":832000,"content_type":"video/mp4","url":"https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/640x360/4nj5R_ZLQLb_KS8a.mp4?tag=12"},{"bitrate":2176000,"content_type":"video/mp4","url":"https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/1280x720/fVUuzU4XhLX72ulz.mp4?tag=12"}]}}],"photos":[],"video":{"aspectRatio":[16,9],"contentType":"media_entity","durationMs":6533,"mediaAvailability":{"status":"available"},"poster":"https://pbs.twimg.com/ext_tw_video_thumb/1727312812651753472/pu/img/ZFi955xKZduzcw0r.jpg","variants":[{"type":"application/x-mpegURL","src":"https://video.twimg.com/ext_tw_video/1727312812651753472/pu/pl/0GQsr7ZICcuJGUhQ.m3u8?tag=12"},{"type":"video/mp4","src":"https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/480x270/8zZvXSdW1GfGEwHa.mp4?tag=12"},{"type":"video/mp4","src":"https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/640x360/4nj5R_ZLQLb_KS8a.mp4?tag=12"},{"type":"video/mp4","src":"https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/1280x720/fVUuzU4XhLX72ulz.mp4?tag=12"}],"videoId":{"type":"tweet","id":"1727317180478324806"},"viewCount":0},"isEdited":false,"isStaleEdit":false},"isEdited":false,"isStaleEdit":false,"note_tweet":{"id":"Tm90ZVR3ZWV0UmVzdWx0czoxODU5OTQzMDE3Njc2NzAxNjk2"}}
+{
+  "__typename": "Tweet",
+  "favorite_count": 588,
+  "lang": "en",
+  "possibly_sensitive": false,
+  "created_at": "2024-11-22T12:52:26.000Z",
+  "display_text_range": [
+    0,
+    279
+  ],
+  "entities": {
+    "hashtags": [
+      {
+        "indices": [
+          53,
+          61
+        ],
+        "text": "Unity3D"
+      },
+      {
+        "indices": [
+          75,
+          87
+        ],
+        "text": "RealtimeVFX"
+      },
+      {
+        "indices": [
+          101,
+          109
+        ],
+        "text": "GameDev"
+      },
+      {
+        "indices": [
+          138,
+          148
+        ],
+        "text": "Photoshop"
+      },
+      {
+        "indices": [
+          168,
+          181
+        ],
+        "text": "AfterEffects"
+      }
+    ],
+    "media": [
+      {
+        "display_url": "pic.x.com/fMlZvii7Ba",
+        "expanded_url": "https://x.com/TheMirzaBeig/status/1859943017790021882/video/1",
+        "indices": [
+          279,
+          302
+        ],
+        "url": "https://t.co/fMlZvii7Ba"
+      }
+    ]
+  },
+  "id_str": "1859943017790021882",
+  "text": "Another year! 🎉 My experience so far...\n\n11 years of #Unity3D.\n13 years of #RealtimeVFX.\n14 years of #GameDev.\n\n16+ years of programming, #Photoshop (Graphics Design), #AfterEffects (Motion Graphics), and audio production. Through the years: HTML 4, ActionScript 2/3, PS, Vegas, https://t.co/fMlZvii7Ba",
+  "user": {
+    "id_str": "999116676",
+    "name": "Mirza Beig",
+    "screen_name": "TheMirzaBeig",
+    "is_blue_verified": true,
+    "profile_image_shape": "Circle",
+    "verified": false,
+    "profile_image_url_https": "https://pbs.twimg.com/profile_images/1134329522927624193/lrd-NM53_normal.png"
+  },
+  "edit_control": {
+    "edit_tweet_ids": [
+      "1859943017790021882"
+    ],
+    "editable_until_msecs": "1732283546000",
+    "edits_remaining": "5",
+    "is_edit_eligible": false
+  },
+  "mediaDetails": [
+    {
+      "additional_media_info": {},
+      "display_url": "pic.x.com/fMlZvii7Ba",
+      "expanded_url": "https://x.com/TheMirzaBeig/status/1859943017790021882/video/1",
+      "ext_media_availability": {
+        "status": "Available"
+      },
+      "indices": [
+        279,
+        302
+      ],
+      "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/1859922624471588864/pu/img/qq4-C7u3XEf-i-TL.jpg",
+      "original_info": {
+        "focus_rects": [],
+        "height": 1080,
+        "width": 1920
+      },
+      "sizes": {
+        "large": {
+          "h": 1080,
+          "resize": "fit",
+          "w": 1920
+        },
+        "medium": {
+          "h": 675,
+          "resize": "fit",
+          "w": 1200
+        },
+        "small": {
+          "h": 383,
+          "resize": "fit",
+          "w": 680
+        },
+        "thumb": {
+          "h": 150,
+          "resize": "crop",
+          "w": 150
+        }
+      },
+      "type": "video",
+      "url": "https://t.co/fMlZvii7Ba",
+      "video_info": {
+        "aspect_ratio": [
+          16,
+          9
+        ],
+        "duration_millis": 24233,
+        "variants": [
+          {
+            "content_type": "application/x-mpegURL",
+            "url": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/pl/oB5SJoBPjmqmUiNS.m3u8?tag=14"
+          },
+          {
+            "bitrate": 256000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/480x270/-t9S3PSEWzEXipGM.mp4?tag=14"
+          },
+          {
+            "bitrate": 832000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/640x360/eByHcfpDb4vVAWZ_.mp4?tag=14"
+          },
+          {
+            "bitrate": 2176000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/1280x720/Xo0tTde9UDYC5R7y.mp4?tag=14"
+          },
+          {
+            "bitrate": 10368000,
+            "content_type": "video/mp4",
+            "url": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/1920x1080/zrMSfjQOUnbdZpzN.mp4?tag=14"
+          }
+        ]
+      }
+    }
+  ],
+  "photos": [],
+  "video": {
+    "aspectRatio": [
+      16,
+      9
+    ],
+    "contentType": "media_entity",
+    "durationMs": 24233,
+    "mediaAvailability": {
+      "status": "available"
+    },
+    "poster": "https://pbs.twimg.com/ext_tw_video_thumb/1859922624471588864/pu/img/qq4-C7u3XEf-i-TL.jpg",
+    "variants": [
+      {
+        "type": "application/x-mpegURL",
+        "src": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/pl/oB5SJoBPjmqmUiNS.m3u8?tag=14"
+      },
+      {
+        "type": "video/mp4",
+        "src": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/480x270/-t9S3PSEWzEXipGM.mp4?tag=14"
+      },
+      {
+        "type": "video/mp4",
+        "src": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/640x360/eByHcfpDb4vVAWZ_.mp4?tag=14"
+      },
+      {
+        "type": "video/mp4",
+        "src": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/1280x720/Xo0tTde9UDYC5R7y.mp4?tag=14"
+      },
+      {
+        "type": "video/mp4",
+        "src": "https://video.twimg.com/ext_tw_video/1859922624471588864/pu/vid/avc1/1920x1080/zrMSfjQOUnbdZpzN.mp4?tag=14"
+      }
+    ],
+    "videoId": {
+      "type": "tweet",
+      "id": "1859943017790021882"
+    },
+    "viewCount": 0
+  },
+  "conversation_count": 15,
+  "news_action_type": "conversation",
+  "quoted_tweet": {
+    "favorite_count": 112,
+    "lang": "en",
+    "possibly_sensitive": false,
+    "reply_count": 2,
+    "retweet_count": 8,
+    "created_at": "2023-11-22T13:24:42.000Z",
+    "display_text_range": [
+      0,
+      280
+    ],
+    "entities": {
+      "hashtags": [
+        {
+          "indices": [
+            66,
+            74
+          ],
+          "text": "Unity3D"
+        },
+        {
+          "indices": [
+            138,
+            146
+          ],
+          "text": "gamedev"
+        }
+      ],
+      "media": [
+        {
+          "display_url": "pic.x.com/82UcwaAFYx",
+          "expanded_url": "https://x.com/TheMirzaBeig/status/1727317180478324806/video/1",
+          "indices": [
+            278,
+            301
+          ],
+          "url": "https://t.co/82UcwaAFYx"
+        }
+      ]
+    },
+    "id_str": "1727317180478324806",
+    "text": "10 (👀) years ago, on this day...\nI tweeted about having picked up #Unity3D.\n\nIt was easier to work with than anything I'd ever touched in #gamedev before. Added a plane, sphere + rigidbody, and hit play. It just worked. No programming.\n\nSo I kept going. 🙂\n\n(📹: my 2013 project) https://t.co/82UcwaAFYx",
+    "user": {
+      "id_str": "999116676",
+      "name": "Mirza Beig",
+      "screen_name": "TheMirzaBeig",
+      "is_blue_verified": true,
+      "profile_image_shape": "Circle",
+      "verified": false,
+      "profile_image_url_https": "https://pbs.twimg.com/profile_images/1134329522927624193/lrd-NM53_normal.png"
+    },
+    "edit_control": {
+      "edit_tweet_ids": [
+        "1727317180478324806"
+      ],
+      "editable_until_msecs": "1700663082000",
+      "edits_remaining": "5",
+      "is_edit_eligible": false
+    },
+    "mediaDetails": [
+      {
+        "additional_media_info": {},
+        "display_url": "pic.x.com/82UcwaAFYx",
+        "expanded_url": "https://x.com/TheMirzaBeig/status/1727317180478324806/video/1",
+        "ext_media_availability": {
+          "status": "Available"
+        },
+        "indices": [
+          278,
+          301
+        ],
+        "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/1727312812651753472/pu/img/ZFi955xKZduzcw0r.jpg",
+        "original_info": {
+          "focus_rects": [],
+          "height": 1080,
+          "width": 1920
+        },
+        "sizes": {
+          "large": {
+            "h": 1080,
+            "resize": "fit",
+            "w": 1920
+          },
+          "medium": {
+            "h": 675,
+            "resize": "fit",
+            "w": 1200
+          },
+          "small": {
+            "h": 383,
+            "resize": "fit",
+            "w": 680
+          },
+          "thumb": {
+            "h": 150,
+            "resize": "crop",
+            "w": 150
+          }
+        },
+        "type": "video",
+        "url": "https://t.co/82UcwaAFYx",
+        "video_info": {
+          "aspect_ratio": [
+            16,
+            9
+          ],
+          "duration_millis": 6533,
+          "variants": [
+            {
+              "content_type": "application/x-mpegURL",
+              "url": "https://video.twimg.com/ext_tw_video/1727312812651753472/pu/pl/0GQsr7ZICcuJGUhQ.m3u8?tag=12"
+            },
+            {
+              "bitrate": 256000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/480x270/8zZvXSdW1GfGEwHa.mp4?tag=12"
+            },
+            {
+              "bitrate": 832000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/640x360/4nj5R_ZLQLb_KS8a.mp4?tag=12"
+            },
+            {
+              "bitrate": 2176000,
+              "content_type": "video/mp4",
+              "url": "https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/1280x720/fVUuzU4XhLX72ulz.mp4?tag=12"
+            }
+          ]
+        }
+      }
+    ],
+    "photos": [],
+    "video": {
+      "aspectRatio": [
+        16,
+        9
+      ],
+      "contentType": "media_entity",
+      "durationMs": 6533,
+      "mediaAvailability": {
+        "status": "available"
+      },
+      "poster": "https://pbs.twimg.com/ext_tw_video_thumb/1727312812651753472/pu/img/ZFi955xKZduzcw0r.jpg",
+      "variants": [
+        {
+          "type": "application/x-mpegURL",
+          "src": "https://video.twimg.com/ext_tw_video/1727312812651753472/pu/pl/0GQsr7ZICcuJGUhQ.m3u8?tag=12"
+        },
+        {
+          "type": "video/mp4",
+          "src": "https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/480x270/8zZvXSdW1GfGEwHa.mp4?tag=12"
+        },
+        {
+          "type": "video/mp4",
+          "src": "https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/640x360/4nj5R_ZLQLb_KS8a.mp4?tag=12"
+        },
+        {
+          "type": "video/mp4",
+          "src": "https://video.twimg.com/ext_tw_video/1727312812651753472/pu/vid/avc1/1280x720/fVUuzU4XhLX72ulz.mp4?tag=12"
+        }
+      ],
+      "videoId": {
+        "type": "tweet",
+        "id": "1727317180478324806"
+      },
+      "viewCount": 0
+    },
+    "isEdited": false,
+    "isStaleEdit": false
+  },
+  "isEdited": false,
+  "isStaleEdit": false,
+  "note_tweet": {
+    "id": "Tm90ZVR3ZWV0UmVzdWx0czoxODU5OTQzMDE3Njc2NzAxNjk2"
+  },
+  "full_text": "Another year! 🎉 My experience so far...\n\n11 years of #Unity3D.\n13 years of #RealtimeVFX.\n14 years of #GameDev.\n\n16+ years of programming, #Photoshop (Graphics Design), #AfterEffects (Motion Graphics), and audio production. Through the years: HTML 4, ActionScript 2/3, PS, Vegas, ACID, AE, Visual Basic, C/C++, FL Studio, GLSL/HLSL, Unity + C#, Python, etc...\n\nMy *other* (non-dev/media) interests that I study: religion, philosophy/logic, and biology. I've also worked in medical, healthcare and adjacent for ~6 years (less or more, depending on definitions + reference frame).\n\nThings I'm not so great at:\n> 3D modelling and cooking. 🥲",
+  "full_text_source": "https://x.com/TheMirzaBeig/status/1859943017790021882"
+}
