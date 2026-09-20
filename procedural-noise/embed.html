@@ -1,100 +1,67 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Procedural Noise Texture Generator — Embed</title>
 <style>
-  html, body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    background: #0d1117;
-  }
-
-  #tool {
-    display: block;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    transform-origin: 0 0;
-    background: #0d1117;
-  }
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:#0d1117;color:#edf2f7;font:13px system-ui,sans-serif;color-scheme:dark}body{display:flex;flex-direction:column}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid #30363d;flex:none}.toolbar span{font-weight:650}.toolbar a{color:#8ec5ff;text-decoration:none;border:1px solid #394757;border-radius:6px;padding:6px 10px;white-space:nowrap}.toolbar a:hover{background:#1b2735}.toolbar a:focus-visible{outline:2px solid #8ec5ff;outline-offset:2px}#tool{width:100%;flex:1;min-height:0;border:0;background:#0d1117}
 </style>
 </head>
 <body>
-<iframe id="tool" src="./" title="Procedural Noise Texture Generator"></iframe>
+<div class="toolbar"><span>Procedural Noise</span><a href="./" target="_blank" rel="noopener">Open full-size ↗</a></div>
+<iframe id="tool" src="./" title="Procedural Noise Texture Generator" allow="fullscreen"></iframe>
 <script>
-(() => {
-  const tool = document.getElementById('tool');
-  let scheduled = false;
-
-  function scheduleFit() {
-    if (scheduled) return;
-    scheduled = true;
-    requestAnimationFrame(() => {
-      scheduled = false;
-      fitTool();
-    });
-  }
-
-  function getContentHeight() {
-    const doc = tool.contentDocument;
-    if (!doc) return 0;
-    const html = doc.documentElement;
-    const body = doc.body;
-    return Math.max(
-      html ? html.scrollHeight : 0,
-      html ? html.offsetHeight : 0,
-      body ? body.scrollHeight : 0,
-      body ? body.offsetHeight : 0
-    );
-  }
-
-  function fitTool() {
-    if (!tool.contentDocument) return;
-
-    const viewportWidth = Math.max(1, window.innerWidth);
-    const viewportHeight = Math.max(1, window.innerHeight);
-    let scale = 1;
-
-    // A few passes account for the source page reflowing as its effective
-    // iframe width changes while we fit it to the available Notion frame.
-    for (let i = 0; i < 4; i++) {
-      const innerWidth = viewportWidth / scale;
-      const innerHeight = viewportHeight / scale;
-
-      tool.style.transform = 'none';
-      tool.style.width = `${innerWidth}px`;
-      tool.style.height = `${innerHeight}px`;
-
-      const contentHeight = getContentHeight();
-      if (!contentHeight) return;
-
-      const nextScale = Math.min(1, viewportHeight / contentHeight);
-      if (Math.abs(nextScale - scale) < 0.002) {
-        scale = nextScale;
-        break;
-      }
-      scale = nextScale;
+const tool = document.getElementById('tool');
+tool.addEventListener('load', () => {
+    const style = tool.contentDocument.createElement('style');
+    style.textContent = `
+    html{scrollbar-color:#465363 #0d1117;scrollbar-width:thin}
+    body{padding:10px}
+    .app{width:100%;max-width:1500px;gap:12px}
+    .panel-header{display:block;padding:10px}
+    .header-main-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .panel-title{font-size:14px}
+    .gpu-readout{display:none}
+    .seed-compact{display:flex;align-items:center;gap:6px;height:auto;flex-wrap:wrap}
+    .seed-compact label{font-size:12px}
+    .header-actions{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px}
+    .toggle-compact,.header-actions>.auto-tile-button{font-size:12px;min-height:30px}
+    .toggle-compact input{width:18px;height:18px}
+    input[type=number],input.vec-input,button,.seed-compact button,.seed-compact input[type=number],.save-image-button{font-size:12px;height:32px}
+    .controls{padding:10px;gap:10px 14px}
+    .control-row,output,.control-select,.playback-time-row{font-size:12px;line-height:1.3}
+    .control-select{height:32px}
+    input[type=range]{height:26px;width:100%;margin:0;touch-action:pan-y}
+    input[type=range]::-webkit-slider-thumb{width:15px;height:15px;margin-top:-5px}
+    input[type=range]::-moz-range-thumb{width:15px;height:15px}
+    .vector-block{grid-template-columns:60px repeat(4,minmax(0,1fr));gap:4px}
+    .vector-label{font-size:11px}
+    .vec-field{grid-template-columns:12px minmax(0,1fr);gap:2px}
+    .vec-field span{font-size:10px}
+    .vec-field input.vec-input{font-size:12px;height:30px}
+    .playback-button{width:32px;min-width:32px;height:32px}
+    .preview-panel{grid-row:1}
+    #previewCanvas{width:min(100%,max(180px,34vh));max-width:100%}
+    .cube-preview-float{width:100px;top:12px;right:12px}
+    @media(min-width:850px){
+      .app{grid-template-columns:minmax(380px, 1fr) minmax(0, 1.1fr);align-items:start}
+      .controls-panel{grid-column:1;grid-row:1}
+      .preview-panel{grid-column:2;grid-row:1;position:sticky;top:0}
+      #previewCanvas{width:100%}
+      .cube-preview-float{width:clamp(100px,12vw,170px)}
     }
-
-    // Give the source page exactly the unscaled size it needs. After the
-    // transform, the complete tool occupies the available outer frame.
-    tool.style.width = `${viewportWidth / scale}px`;
-    tool.style.height = `${viewportHeight / scale}px`;
-    tool.style.transform = `scale(${scale})`;
-  }
-
-  tool.addEventListener('load', () => {
-    fitTool();
-    setTimeout(fitTool, 50);
-    setTimeout(fitTool, 250);
-  });
-
-  window.addEventListener('resize', scheduleFit, { passive: true });
-})();
+    @media(max-width:420px){
+      body{padding:6px}
+      .controls{gap:8px}
+      .vector-block{grid-template-columns:48px repeat(4,minmax(0,1fr));gap:2px}
+      .vec-field{grid-template-columns:9px minmax(0,1fr);gap:0}
+      .vec-field input.vec-input{padding:0 2px}
+      .seed-compact{margin-left:0}
+    }
+    `;
+    tool.contentDocument.head.append(style);
+});
 </script>
 </body>
 </html>
