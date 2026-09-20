@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>X post embed</title>
+<style>
+html, body { margin: 0; padding: 0; background: #191919; color: #eee; scrollbar-width: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+main { max-width: 550px; margin: 0 auto; overflow: hidden; border-radius: 14px; }
+iframe { display: block; width: 100%; height: 1600px; border: 0; background: #15202b; }
+#status { font: 14px system-ui; padding: 12px; }
+</style>
+</head>
+<body>
+<p id="status">Loading X post…</p>
+<main id="container"></main>
+<script>
+const postId = new URLSearchParams(location.search).get("id");
+if (!postId || !/^\d+$/.test(postId)) { throw new Error("Provide an X post ID using ?id=POST_ID."); }
+const status = document.getElementById("status");
+const frame = document.createElement("iframe");
+frame.title = "X post";
+frame.scrolling = "no";
+frame.allow = "fullscreen";
+frame.allowFullscreen = true;
+window.addEventListener("message", (event) => {
+    if (event.origin !== "https://platform.twitter.com" || event.source !== frame.contentWindow) { return; }
+    const message = event.data && event.data["twttr.embed"];
+    if (!message) { return; }
+    if (message.method === "twttr.private.resize") {
+        const size = message.params && message.params[0];
+        if (size && Number.isFinite(size.height) && size.height > 0) {
+            frame.style.height = Math.ceil(size.height) + "px";
+        }
+    }
+    if (message.method === "twttr.private.rendered") { status.hidden = true; }
+});
+frame.src = "https://platform.twitter.com/embed/Tweet.html?theme=dark&id=" + postId;
+document.getElementById("container").append(frame);
+</script>
+</body>
+</html>
