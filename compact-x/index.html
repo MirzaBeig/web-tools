@@ -16,6 +16,31 @@ const root = document.getElementById('root');
 const parameters = new URLSearchParams(location.search);
 const postId = parameters.get('id');
 const lineCount = Number(parameters.get('lines') || 5);
+function fitTextToEmbed(text, more){
+    if(parameters.get('fit') !== '1'){return;}
+    const article = root.querySelector('article');
+    let framePending = false;
+    function fit(){
+        framePending = false;
+        if(more.getAttribute('aria-expanded') === 'true'){return;}
+        more.hidden = false;
+        const lineHeight = Number.parseFloat(getComputedStyle(text).lineHeight);
+        const reservedHeight = article.getBoundingClientRect().height - text.getBoundingClientRect().height;
+        const availableHeight = document.documentElement.clientHeight - reservedHeight - 2;
+        const count = Math.max(1, Math.min(30, Math.floor(availableHeight / lineHeight)));
+        text.style.setProperty('--lines', count);
+        more.hidden = text.scrollHeight <= text.clientHeight + 1;
+    }
+    function scheduleFit(){
+        if(framePending){return;}
+        framePending = true;
+        requestAnimationFrame(fit);
+    }
+    window.addEventListener('resize', scheduleFit);
+    more.addEventListener('click', scheduleFit);
+    new ResizeObserver(scheduleFit).observe(article);
+    scheduleFit();
+}
 function addEditor(text, more){
     if(parameters.get('edit') !== '1'){return;}
     const panel = element('section','editor');
@@ -87,6 +112,14 @@ function quote(post){const card=link(postUrl(post),'quote');card.setAttribute('a
 const icons={reply:'<path d="M20 11.5a8.5 8.5 0 0 1-8.5 8.5H4l2-4A8.5 8.5 0 1 1 20 11.5Z"/>',heart:'<path d="M12 21 3.5 12.5C-2 6 6-1 12 6c6-7 14 0 8.5 6.5Z"/>',external:'<path d="M14 3h7v7M21 3 10 14M10 5H4v16h16v-6"/>'};
 function action(url,label,type){const anchor=link(url,type,label);const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('aria-hidden','true');icon.innerHTML=icons[type==='likes'?'heart':type];anchor.prepend(icon);return anchor;}
 async function render(){if(!/^\d+$/.test(postId||'')){throw new Error('A numeric post id is required.');}if(!Number.isInteger(lineCount)||lineCount<1||lineCount>30){throw new Error('lines must be between 1 and 30.');}const response=await fetch('./posts/'+postId+'.json?v=2', {cache:'no-cache'});if(!response.ok){throw new Error('This post has not been imported ('+response.status+').');}const post=await response.json();const article=element('article');article.append(header(post));const body=element('div','body');const text=textBlock(post);text.style.setProperty('--lines',lineCount);body.append(text);const more=element('button','more','Show more');more.setAttribute('aria-expanded','false');more.onclick=()=>{const expanded=more.getAttribute('aria-expanded')!=='true';more.setAttribute('aria-expanded',String(expanded));text.classList.toggle('clamped',!expanded);more.textContent=expanded?'Show less':'Show more';};body.append(more);if(post.note_tweet && !post.full_text){const full=link(postUrl(post),'source',' · Full post on X');body.append(full);}const media=mainMedia(post);if(media){body.append(media);}if(post.quoted_tweet){body.append(quote(post.quoted_tweet));}const footer=element('div','footer');footer.append(action('https://x.com/intent/tweet?in_reply_to='+post.id_str,String(post.conversation_count??post.reply_count??'Reply'),'reply'),action('https://x.com/intent/like?tweet_id='+post.id_str,String(post.favorite_count??'Like'),'likes'),action(postUrl(post),'View on X','external'));body.append(footer);article.append(body);root.replaceChildren(article);requestAnimationFrame(()=>{more.hidden=text.scrollHeight<=text.clientHeight+1;});new ResizeObserver(()=>{if(more.getAttribute('aria-expanded')==='false'){more.hidden=text.scrollHeight<=text.clientHeight+1;}}).observe(text);}
-render().then(()=>addEditor(root.querySelector('.body > .text'),root.querySelector('.more'))).catch(error=>{root.className='error';root.textContent=error.message;});
+render().then(()=>{
+    const text = root.querySelector('.body > .text');
+    const more = root.querySelector('.more');
+    if(parameters.get('fit') === '1'){
+        fitTextToEmbed(text, more);
+    }else{
+        addEditor(text, more);
+    }
+}).catch(error=>{root.className='error';root.textContent=error.message;});
 </script>
 </body></html>
