@@ -122,14 +122,21 @@ public static partial class Runtime
 }''')
 write('main.js', "import { dotnet } from './_framework/dotnet.js';\nexport { dotnet };\n")
 subprocess.run(['dotnet', 'publish', str(project / 'EngineRuntime.csproj'), '-c', 'Release'], check=True)
-bundles = list((project / 'bin/Release').rglob('AppBundle'))
-if not bundles: raise RuntimeError('Expected AppBundle was not created')
-bundle = max(bundles, key=lambda p: p.stat().st_mtime)
+loaders = list((project / 'bin/Release').rglob('dotnet.js'))
+print('PUBLISHED_LOADERS=' + json.dumps([str(p.relative_to(project)) for p in loaders]))
+loaders = [p for p in loaders if p.parent.name == '_framework']
+if not loaders:
+    print('BUILD_OUTPUTS=' + json.dumps([str(p.relative_to(project)) for p in (project / 'bin/Release').rglob('*') if p.is_file()][:500]))
+    raise RuntimeError('No _framework/dotnet.js was published')
+loader = max(loaders, key=lambda p: ('publish' in p.parts, p.stat().st_mtime))
+bundle = loader.parent.parent
 out = root / 'runtime-dist'
 if out.exists(): shutil.rmtree(out)
 shutil.copytree(bundle, out)
 refs = ['_framework/' + f.name for f in sorted((out / '_framework').glob('*.dll')) if f.name.startswith(('System.', 'netstandard', 'EngineRuntime', 'mscorlib', 'Microsoft.CSharp'))]
-if not any('EngineRuntime' in f for f in refs): raise RuntimeError('Runtime DLLs not found; cannot generate Roslyn reference manifest')
+if not any('EngineRuntime' in f for f in refs):
+    print('FRAMEWORK_FILES=' + json.dumps([p.name for p in (out / '_framework').iterdir()]))
+    raise RuntimeError('Runtime DLLs not found; cannot generate Roslyn reference manifest')
 (out / 'references.json').write_text(json.dumps(refs))
 (out / 'worker.js').write_text(r'''import { dotnet } from './_framework/dotnet.js';
 let api;
