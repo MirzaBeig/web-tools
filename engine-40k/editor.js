@@ -63,8 +63,16 @@ function saveNow(){
 function scheduleSave(){ $('save-state').textContent='Saving…';clearTimeout(storageTimer);storageTimer=setTimeout(saveNow,500); }
 function take(){return JSON.stringify(project);}
 function pushHistory(before){ if(before===take())return;history.push(before);if(history.length>80)history.shift();future.length=0;refreshTransport(); }
-function commitCode(){if(sourceBaseline && sourceBaseline!==project.source){const before=clone(project);before.source=sourceBaseline;pushHistory(JSON.stringify(before));}sourceBaseline=project.source;}
-function edit(action){if(mode!=='edit'){toast('Stop the game before editing the scene.');return false;}commitCode();const before=take();action();project=validate(project);pushHistory(before);sourceBaseline=project.source;refreshProject();scheduleSave();return true;}
+function commitCode(){if(sourceBaseline!==project.source){const before=clone(project);before.source=sourceBaseline;pushHistory(JSON.stringify(before));}sourceBaseline=project.source;}
+function edit(action){
+ if(mode!=='edit'){toast('Stop the game before editing the scene.');return false;}
+ commitCode();const before=take(), previousSelection=selectedId;
+ try{action();project=validate(project);}catch(error){
+  project=JSON.parse(before);selectedId=previousSelection;refreshProject();
+  toast(error.message);log('Edit rejected: '+error.message,'error');return false;
+ }
+ pushHistory(before);sourceBaseline=project.source;refreshProject();scheduleSave();return true;
+}
 function restore(serialized){project=validate(JSON.parse(serialized));sourceBaseline=project.source;selectedId=project.entities.some(e=>e.id===selectedId)?selectedId:null;refreshProject(true);scheduleSave();}
 function undo(){if(mode!=='edit')return;commitCode();if(!history.length)return;future.push(take());restore(history.pop());toast('Undo');}
 function redo(){if(mode!=='edit')return;commitCode();if(!future.length)return;history.push(take());restore(future.pop());toast('Redo');}
@@ -101,7 +109,13 @@ async function copy(text){try{await navigator.clipboard.writeText(text);}catch{c
 function download(name,text,type='application/json'){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
 function prompt(){return 'REQUEST (preserve exactly):\n'+$('ai-request').value+'\n\nYou are editing an Engine 40K browser game. Return either the complete Game.cs in one C# code block, or a JSON object {"engine40kPatch":1,"source":"complete C# source","entities":[optional complete replacement scene]}. Omit fields that do not change. Do not add Markdown commentary. Keep all existing functionality unless the request changes it. The user runs and edits on a phone. Do not use UnityEngine or JavaScript.\n\nGAMEPLAY API:\n'+apiDoc+'\n\nCURRENT PROJECT:\n'+JSON.stringify(project,null,2);}
 function setDrawer(height){const max=innerHeight-64;const h=Math.max(108,Math.min(max,height));document.documentElement.style.setProperty('--drawer',h+'px');}
-function resetCamera(){if(!camera)return;camera.position.set(10,10,13);orbit.target.set(0,0,0);orbit.update();}
+function resetCamera(){
+ if(!camera)return;
+ // Fit the demo's width in portrait without tying projection to panel size.
+ const distance=Math.max(20,17/(2*Math.tan(camera.fov*Math.PI/360)*camera.aspect));
+ camera.position.set(10,10,13).normalize().multiplyScalar(Math.min(60,distance));
+ orbit.target.set(0,0,0);orbit.update();
+}
 function focusSelected(){const obj=objects.get(selectedId);if(!obj)return toast('Select an object first.');const size=Math.max(2.4,obj.scale.length()*1.7);const direction=camera.position.clone().sub(orbit.target).normalize();orbit.target.copy(obj.position);camera.position.copy(obj.position).addScaledVector(direction,size);orbit.update();}
 function updateSelection(){if(!outline||!transform)return;const obj=objects.get(selectedId);const editing=mode==='edit';outline.visible=!!obj&&obj.visible&&editing;if(outline.visible)outline.setFromObject(obj);if(obj&&editing&&tool!=='select'){transform.setMode(tool);transform.attach(obj);transform.enabled=true;}else{transform.detach();transform.enabled=false;}transform.getHelper().visible=editing&&tool!=='select'&&!!obj;}
 function syncScene(entities){
@@ -143,10 +157,24 @@ function init3D(){
  outline=new THREE.BoxHelper(new THREE.Mesh(),0xf1d089);outline.material.transparent=true;outline.material.opacity=.75;outline.visible=false;scene.add(outline);
  const ray=new THREE.Raycaster(), point=new THREE.Vector2();let down=null, pointers=new Set();
  renderer.domElement.addEventListener('pointerdown',e=>{pointers.add(e.pointerId);down={x:e.clientX,y:e.clientY,time:performance.now(),multi:pointers.size>1,gizmo:!!transform.axis};},true);
- renderer.domElement.addEventListener('pointerup',e=>{pointers.delete(e.pointerId);if(!down)return;const d=down;down=null;if(d.multi||d.gizmo||Math.hypot(e.clientX-d.x,e.clientY-d.y)>7||performance.now()-d.time>700)return;const box=renderer.domElement.getBoundingClientRect();point.set((e.clientX-box.left)/box.width*2-1,-(e.clientY-box.top)/box.height*2+1);ray.setFromCamera(point,camera);const hit=ray.intersectObjects([...objects.values()].filter(o=>o.visible),false)[0];if(mode==='play'){if(hit)tapQueue=hit.object.userData.id;}else if(mode==='edit')select(hit?.object.userData.id||null);});
+ renderer.domElement.addEventListener('pointerup',e=>{pointers.delete(e.pointerId);if(!down)return;const d=down;down=null;if(d.multi||d.gizmo||Math.hypot(e.clientX-d.x,e.clientY-d.y)>7||performance.now()-d.time>700)return;const box=renderer.domElement.getBoundingClientRect();point.set((e.clientX-box.left)/box.width*2-1,-(e.clientY-box.top)/box.height*2+1);ray.setFromCamera(point,camera);let hit=ray.intersectObjects([...objects.values()].filter(o=>o.visible),false)[0];
+ // A ring's empty centre is still a usable selection target on a touchscreen.
+ let nearest=e.pointerType==='touch'?18:9;
+ for(const o of objects.values()){
+  if(!o.visible||o.userData.mesh!=='torus')continue;
+  const projected=o.position.clone().project(camera);
+  if(projected.z < -1 || projected.z > 1)continue;
+  const px=box.left+(projected.x+1)*box.width/2, py=box.top+(1-projected.y)*box.height/2;
+  const distance=Math.hypot(e.clientX-px,e.clientY-py);
+  const depth=ray.ray.origin.distanceTo(o.position);
+  if(distance<nearest && (!hit||depth<=hit.distance+Math.max(o.scale.x,o.scale.y,o.scale.z))){
+   nearest=distance;hit={object:o,distance:depth};
+  }
+ }
+ if(mode==='play'){if(hit)tapQueue=hit.object.userData.id;}else if(mode==='edit')select(hit?.object.userData.id||null);});
  renderer.domElement.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);down=null;});
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();stop(false);log('Graphics context lost. Save or export the project, then reload.','error');toast('Graphics context lost. Reload the editor.');});
- const resize=()=>{const w=$('stage').clientWidth,h=$('stage').clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();};
+ const resize=()=>{const w=$('stage').clientWidth,h=$('stage').clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.setViewOffset(w,h,0,h*0.16,w,h);camera.updateProjectionMatrix();};
  new ResizeObserver(resize).observe($('stage'));resize();resetCamera();
  let frames=0,stamp=performance.now();
  function frame(now){requestAnimationFrame(frame);orbit.update();if(outline.visible)outline.update();if(mode==='play'&&!pendingTick&&workerStatus==='ready'){const dt=Math.min((now-lastTick)/1000,.1);if(dt>=.012){lastTick=now;const tap=tapQueue;tapQueue='';pendingTick=true;const epoch=playEpoch;request({type:'tick',dt,moveX:movement.x,moveZ:movement.z,tap},5000).then(result=>{if(epoch!==playEpoch)return;tickMs=result.ms;if(!result.ok)throw new Error(result.error||'C# runtime exception');applySnapshot(result.snapshot);}).catch(error=>{if(epoch===playEpoch){stop(false);log(error.message,'error');toast('C# stopped. See Console.');}}).finally(()=>{if(epoch===playEpoch)pendingTick=false;});}}
@@ -166,7 +194,7 @@ function ensureRuntime(){
  const timeout=setTimeout(()=>{if(generation===workerGeneration&&workerStatus!=='ready')fatal('C# runtime startup timed out. Check the asset download and retry Play.');},180000);
  const fatal=message=>{if(generation!==workerGeneration)return;clearTimeout(timeout);workerStatus='failed';$('runtime-status').textContent='C# load failed';$('runtime-detail').textContent=message;readyReject?.(new Error(message));readyPromise=null;for(const [,p]of pending){clearTimeout(p.timer);p.reject(new Error(message));}pending.clear();worker?.terminate();worker=null;log(message,'error');};
  try{worker=window.Engine40KCreateWorker?window.Engine40KCreateWorker():new Worker(new URL('./runtime-dist/worker.js',document.baseURI),{type:'module'});
- worker.onerror=e=>fatal(e.message||'The C# worker could not start.');
+ worker.onerror=e=>fatal(e.message||('The C# worker could not start.'+(e.filename?' '+e.filename+':'+e.lineno:'')));
  worker.onmessage=({data})=>{if(generation!==workerGeneration)return;
   if(data.type==='progress'){$('runtime-status').textContent='C# references '+Math.round(data.done/data.total*100)+'%';return;}
   if(data.type==='ready'){clearTimeout(timeout);workerStatus='ready';$('runtime-status').textContent='C# ready';$('runtime-detail').textContent=data.info+' · separate Web Worker';log(data.info+' ready.','success');readyResolve?.();return;}
@@ -197,14 +225,14 @@ function togglePause(){if(mode==='play')mode='paused';else if(mode==='paused'){m
 function wire(){
  $('api-doc').textContent=apiDoc;
  const groups={position:['x','y','z'],rotation:['rx','ry','rz'],scale:['sx','sy','sz']};
- for(const [group,keys]of Object.entries(groups))for(const [i,key]of keys.entries()){const label=document.createElement('label');label.className='axis-field';const span=document.createElement('span');span.textContent=['X','Y','Z'][i];const input=document.createElement('input');input.type='number';input.id='v-'+key;input.step=group==='rotation'?'1':'0.1';input.inputMode='decimal';input.setAttribute('aria-label',group+' '+span.textContent);input.onchange=()=>{let value=Number(input.value);if(!Number.isFinite(value)){renderInspector();return;}value=Math.max(group==='scale'?.02:-100000,Math.min(100000,value));edit(()=>{const e=current();if(e)e[key]=value;});};label.append(span,input);document.querySelector('[data-vector="'+group+'"]').append(label);}
+ for(const [group,keys]of Object.entries(groups))for(const [i,key]of keys.entries()){const label=document.createElement('label');label.className='axis-field';const span=document.createElement('span');span.textContent=['X','Y','Z'][i];const input=document.createElement('input');input.type='number';input.id='v-'+key;input.step=group==='rotation'?'1':'0.1';input.inputMode='decimal';input.setAttribute('aria-label',group+' '+span.textContent);input.onchange=()=>{let value=Number(input.value);if(!Number.isFinite(value)){renderInspector();return;}value=Math.max(group==='scale' ? 0.02 : -100000,Math.min(100000,value));edit(()=>{const e=current();if(e)e[key]=value;});};label.append(span,input);document.querySelector('[data-vector="'+group+'"]').append(label);}
  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
  document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{try{add(b.dataset.add);}catch(e){toast(e.message);}});
  document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{tool=b.dataset.tool;document.querySelectorAll('[data-tool]').forEach(x=>x.classList.toggle('selected',x===b));updateSelection();});
  $('play').onclick=()=>play();$('pause').onclick=togglePause;$('stop').onclick=()=>stop();$('reset').onclick=()=>{const active=['play','paused'].includes(mode);stop(false);resetCamera();if(active)play();else toast('Preview reset');};$('undo').onclick=undo;$('redo').onclick=redo;
  $('focus').onclick=focusSelected;$('focus-inspector').onclick=focusSelected;$('home-view').onclick=resetCamera;
  $('entity-name').onchange=e=>edit(()=>{if(current())current().name=e.target.value;});$('entity-active').onchange=e=>edit(()=>{if(current())current().active=e.target.checked;});$('entity-color').onchange=e=>edit(()=>{if(current())current().color=e.target.value;});
- $('snap').onchange=()=>{const value=Number($('snap').value);transform.setTranslationSnap(value||null);transform.setRotationSnap(value?Math.PI/12:null);transform.setScaleSnap(value?.1:null);};
+ $('snap').onchange=()=>{const value=Number($('snap').value);transform.setTranslationSnap(value||null);transform.setRotationSnap(value?Math.PI/12:null);transform.setScaleSnap(value ? 0.1 : null);};
  $('duplicate').onclick=()=>edit(()=>{const old=current();if(old){const e=clone(old);e.id=uuid();e.name=uniqueName(old.name);e.x+=1;project.entities.push(e);selectedId=e.id;}});
  $('delete').onclick=()=>edit(()=>{project.entities=project.entities.filter(e=>e.id!==selectedId);selectedId=null;});
  $('source').addEventListener('focus',()=>{sourceBaseline=project.source;});$('source').addEventListener('input',()=>{project.source=$('source').value;lineNumbers();scheduleSave();$('compile-state').textContent='Edited · press Play to compile';});$('source').addEventListener('blur',commitCode);$('source').addEventListener('scroll',()=>{$('line-numbers').scrollTop=$('source').scrollTop;});$('source').addEventListener('click',cursorPosition);$('source').addEventListener('keyup',cursorPosition);
