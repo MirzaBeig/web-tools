@@ -1,6 +1,6 @@
 """Embed editor, .NET runtime and Roslyn into one offline HTML file."""
 from pathlib import Path
-import base64,gzip,json,sys
+import base64,gzip,json,sys,shutil
 root=Path(__file__).resolve().parent
 fw=root/'runtime-dist/_framework'
 payload={}
@@ -27,7 +27,15 @@ async function bytes(name){
  pendingAssets.set(name,promise);return promise;
 }
 function base64(data){let s='';for(let i=0;i<data.length;i+=32768)s+=String.fromCharCode(...data.subarray(i,i+32768));return btoa(s);}
-async function moduleURL(name){if(!modules.has(name))modules.set(name,URL.createObjectURL(new Blob([await bytes(name)],{type:'text/javascript'})));return modules.get(name);}
+async function moduleURL(name){
+ if(!modules.has(name)){
+  // Blob modules lack a hierarchical base. Give the bundled loader a logical base;
+  // withResourceLoader supplies every dependency from embedded bytes, not that URL.
+  const source=new TextDecoder().decode(await bytes(name)).replaceAll('import.meta.url',JSON.stringify('https://engine40k.invalid/_framework/'+name));
+  modules.set(name,URL.createObjectURL(new Blob([source],{type:'text/javascript'})));
+ }
+ return modules.get(name);
+}
 let api;
 try{
  if(typeof DecompressionStream!=='function')throw new Error('This browser does not provide gzip decompression. Use a current browser.');
@@ -57,15 +65,31 @@ try{
 }catch(e){postMessage({type:'fatal',error:String(e.stack||e)});}
 })();
 '''.replace('__ASSETS__',json.dumps(payload,separators=(',',':'))).replace('__REFERENCES__',json.dumps(references))
-bootstrap="window.Engine40KCreateWorker=()=>{const url=URL.createObjectURL(new Blob(["+json.dumps(worker)+"],{type:'text/javascript'}));const w=new Worker(url,{type:'module'});setTimeout(()=>URL.revokeObjectURL(url),1000);return w;};"
-license_text=(root/'runtime-dist/THREE-LICENSE.txt').read_text()
+# Classic bootstrap workers support file-origin documents in Chromium; dynamic
+# module imports are still used inside that worker for the actual .NET runtime.
+bootstrap="window.Engine40KCreateWorker=()=>{const url=URL.createObjectURL(new Blob(["+json.dumps(worker)+"],{type:'text/javascript'}));const w=new Worker(url);const release=()=>URL.revokeObjectURL(url);w.addEventListener('message',release,{once:true});w.addEventListener('error',release,{once:true});const kill=w.terminate.bind(w);w.terminate=()=>{release();kill();};return w;};"
+notices=['Three.js\n'+(root/'runtime-dist/THREE-LICENSE.txt').read_text()]
+dotnet=shutil.which('dotnet')
+if dotnet:
+    sdkroot=Path(dotnet).resolve().parent
+    for name in ('LICENSE.txt','ThirdPartyNotices.txt'):
+        source=sdkroot/name
+        if source.exists():
+            notices.append('.NET SDK distribution / '+name+'\n'+source.read_text(errors='replace'))
+    for package in ('microsoft.codeanalysis.common','microsoft.codeanalysis.csharp'):
+        folder=Path.home()/'.nuget/packages'/package/'4.14.0'
+        for source in folder.glob('*'):
+            if source.is_file() and source.suffix.lower() in ('.txt','.md') and any(t in source.name.lower() for t in ('license','notice')):
+                notices.append(package+' / '+source.name+'\n'+source.read_text(errors='replace'))
+license_text='\n\n'.join(notices)
+(root/'THIRD-PARTY-NOTICES.txt').write_text(license_text)
 js=(root/'runtime-dist/three.bundle.js').read_text()
 editor=(root/'editor.js').read_text()
 def inline(source):return '<script>'+source.replace('</script','<\\/script')+'</script>'
 html=(root/'index.html').read_text()
 html=html.replace('<script src="runtime-dist/three.bundle.js"></script>',inline(js)+inline(bootstrap))
 html=html.replace('<script src="editor.js"></script>',inline(editor))
-html=html.replace('</head>','<!-- Three.js license: '+license_text.replace('--','—')+' -->\n</head>')
+html=html.replace('</head>','<!-- Bundled dependency notices:\n'+license_text.replace('--','—')+' -->\n</head>')
 out=Path(sys.argv[1]) if len(sys.argv)>1 else root/'Engine_40K_v0_1.html'
 out.write_text(html)
 print('SINGLE_HTML='+str(out)+' ('+str(out.stat().st_size)+' bytes)')
