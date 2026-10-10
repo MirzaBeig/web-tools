@@ -1,0 +1,50 @@
+name: Engine 40K proof
+on:
+  push:
+    branches: [engine-40k-20261010]
+    paths: ['engine-40k/**', '.github/workflows/engine-40k.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: engine-40k-proof
+  cancel-in-progress: true
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.100'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser build tools
+        run: dotnet workload install wasm-tools --skip-manifest-update
+      - name: Build actual .NET, Roslyn and graphics bundle
+        run: python3 engine-40k/build_runtime.py
+      - name: Install test browser
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Prove real C# compilation and execution in the browser
+        run: python3 engine-40k/smoke_runtime.py
+      - name: Test editor when present
+        run: |
+          if test -f engine-40k/test_editor.py; then python3 engine-40k/test_editor.py; fi
+      - name: Collect source and static website
+        if: always()
+        run: |
+          mkdir -p engine-40k-artifact
+          cp -a engine-40k/runtime-dist engine-40k-artifact/ 2>/dev/null || true
+          cp engine-40k/*.html engine-40k/*.js engine-40k/*.css engine-40k/*.json engine-40k/*.md engine-40k/*.py engine-40k-artifact/ 2>/dev/null || true
+          cp -a engine-40k/runtime engine-40k-artifact/source-runtime 2>/dev/null || true
+          rm -rf engine-40k-artifact/source-runtime/bin engine-40k-artifact/source-runtime/obj
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: engine-40k-proof
+          path: engine-40k-artifact/
+          retention-days: 14
